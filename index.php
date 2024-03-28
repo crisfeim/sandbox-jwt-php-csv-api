@@ -23,6 +23,7 @@ function handleRequest($request) {
         
         $decodedPayload = verifyJWT($token);
         if ($decodedPayload === false) {
+            http_response_code(401);
             return [
                 'error' => 'Invalid or expired token',
             ];
@@ -36,7 +37,19 @@ function handleRequest($request) {
     } elseif ($method === 'POST' && $path === '/recipes') {
         
         $title = $body['title'];
-        $userId = $body['userId'];
+        
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        $token = str_replace('Bearer ', '', $authHeader);
+        $decodedPayload = verifyJWT($token);
+        if ($decodedPayload === false) {
+            http_response_code(401);
+            return [
+                'error' => 'Invalid or expired token',
+            ];
+        }
+        
+        $userId = $decodedPayload['sub'];
+        
         $recipe = createRecipe($title, $userId);
         
         return ['recipe' => $recipe];

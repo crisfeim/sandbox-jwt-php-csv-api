@@ -2,7 +2,7 @@
     
     function getRecipes() {
         $recipes = [];
-        $file = fopen('recipes.csv', 'r');
+        $file = fopen('db/recipes.csv', 'r');
         while ($row = fgetcsv($file)) {
             $recipe = array_map('trim', $row);
             $recipes[] = [
@@ -34,10 +34,11 @@
         ];
         $recipes[] = $recipe;
         saveRecipes($recipes);
+        return $recipe;
      }
     
     function saveRecipes($recipes) {
-        $file = fopen('recipes.csv', 'w');
+        $file = fopen('db/recipes.csv', 'w');
         foreach ($recipes as $recipe) {
             fputcsv($file, $recipe);
         }
